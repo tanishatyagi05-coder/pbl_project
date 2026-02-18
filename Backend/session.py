@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from models import Session as ClassSession
-from models import Student
+from models import Session as ClassSession, Student
 
 router = APIRouter()
 
+
+# ---------- DB DEPENDENCY ----------
 def get_db():
     db = SessionLocal()
     try:
@@ -27,6 +28,15 @@ def start_session(
     db: Session = Depends(get_db)
 ):
 
+    # 🔥 deactivate any previous active sessions of this teacher
+    db.query(ClassSession).filter(
+        ClassSession.teacher_id == teacher_id,
+        ClassSession.is_active == True
+    ).update({"is_active": False})
+
+    db.commit()
+
+    # 🔥 create new active session
     session = ClassSession(
         teacher_id=teacher_id,
         course_id=course_id,
@@ -43,13 +53,19 @@ def start_session(
     db.commit()
     db.refresh(session)
 
-    return {"message": "Session started", "session_id": session.id}
+    return {
+        "message": "Session started",
+        "session_id": session.id
+    }
 
 
 # ---------- STOP SESSION ----------
 @router.post("/session/stop/{session_id}")
 def stop_session(session_id: int, db: Session = Depends(get_db)):
-    session = db.query(ClassSession).filter(ClassSession.id == session_id).first()
+
+    session = db.query(ClassSession).filter(
+        ClassSession.id == session_id
+    ).first()
 
     if not session:
         return {"error": "Session not found"}
@@ -63,9 +79,14 @@ def stop_session(session_id: int, db: Session = Depends(get_db)):
 # ---------- GET CURRENT SESSION FOR TEACHER ----------
 @router.get("/session/current/{teacher_id}")
 def get_current_session(teacher_id: str, db: Session = Depends(get_db)):
+
     session = (
         db.query(ClassSession)
-        .filter(ClassSession.teacher_id == teacher_id, ClassSession.is_active == True)
+        .filter(
+            ClassSession.teacher_id == teacher_id,
+            ClassSession.is_active == True
+        )
+        .order_by(ClassSession.id.desc())   # 🔥 always latest session
         .first()
     )
 
@@ -73,22 +94,26 @@ def get_current_session(teacher_id: str, db: Session = Depends(get_db)):
         return {"message": "No active session"}
 
     return session
+
+
 # ---------- GET SESSION FOR STUDENT ----------
 @router.get("/student/session/{reg_no}")
 def get_session_for_student(reg_no: str, db: Session = Depends(get_db)):
 
-    student = db.query(Student).filter(Student.reg_no == reg_no).first()
+    student = db.query(Student).filter(
+        Student.reg_no == reg_no
+    ).first()
 
     if not student:
         return {"error": "Student not found"}
 
-    # 🔥 FIX: remove section matching, only check teacher + active session
     session = (
         db.query(ClassSession)
         .filter(
             ClassSession.teacher_id == student.teacher_id,
             ClassSession.is_active == True
         )
+        .order_by(ClassSession.id.desc())   # 🔥 ensures latest session
         .first()
     )
 
