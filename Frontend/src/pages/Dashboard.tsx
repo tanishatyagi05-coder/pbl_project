@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { LogOut, Camera, Sparkles, Clock, User2, BookOpen, Building2 } from 'lucide-react';
+import { LogOut, Camera, Clock } from 'lucide-react';
 import manipalLogo from '@/assets/manipal-logo.png';
 import { useState, useEffect } from 'react';
 
@@ -27,8 +27,13 @@ const Dashboard = () => {
 
         if (data.session_id) {
           setActiveSession(data);
+
+          // ⭐ VERY IMPORTANT — SAVE SESSION FOR ATTENDANCE SUBMISSION
+          localStorage.setItem("session_id", data.session_id);
+
         } else {
           setActiveSession(null);
+          localStorage.removeItem("session_id");
         }
       } catch (err) {
         console.error("Failed to fetch session", err);
@@ -48,6 +53,7 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     logout();
+    localStorage.removeItem("session_id");
     navigate('/');
   };
 

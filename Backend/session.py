@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from models import Session as ClassSession, Student
+from models import Session as ClassSession, Student, Classroom
 
 router = APIRouter()
 
 
-# ---------- DB DEPENDENCY ----------
+# ---------- DB ----------
 def get_db():
     db = SessionLocal()
     try:
@@ -23,29 +23,36 @@ def start_session(
     block: str,
     room: str,
     section: str,
-    latitude: float,
-    longitude: float,
     db: Session = Depends(get_db)
 ):
 
-    # 🔥 deactivate any previous active sessions of this teacher
+    # 🔥 Fetch classroom coordinates from DB
+    classroom = db.query(Classroom).filter(
+        Classroom.block == block,
+        Classroom.room == room
+    ).first()
+
+    if not classroom:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Classroom not found")
+
+    # deactivate old sessions
     db.query(ClassSession).filter(
         ClassSession.teacher_id == teacher_id,
         ClassSession.is_active == True
     ).update({"is_active": False})
-
     db.commit()
 
-    # 🔥 create new active session
+    # 🔥 create new session using DB coordinates
     session = ClassSession(
         teacher_id=teacher_id,
         course_id=course_id,
         block=block,
         room=room,
         section=section,
-        latitude=latitude,
-        longitude=longitude,
-        radius=50,
+        latitude=classroom.latitude,
+        longitude=classroom.longitude,
+        radius=100,
         is_active=True
     )
 
@@ -57,7 +64,6 @@ def start_session(
         "message": "Session started",
         "session_id": session.id
     }
-
 
 # ---------- STOP SESSION ----------
 @router.post("/session/stop/{session_id}")
@@ -74,26 +80,6 @@ def stop_session(session_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Session stopped"}
-
-
-# ---------- GET CURRENT SESSION FOR TEACHER ----------
-@router.get("/session/current/{teacher_id}")
-def get_current_session(teacher_id: str, db: Session = Depends(get_db)):
-
-    session = (
-        db.query(ClassSession)
-        .filter(
-            ClassSession.teacher_id == teacher_id,
-            ClassSession.is_active == True
-        )
-        .order_by(ClassSession.id.desc())   # 🔥 always latest session
-        .first()
-    )
-
-    if not session:
-        return {"message": "No active session"}
-
-    return session
 
 
 # ---------- GET SESSION FOR STUDENT ----------
@@ -113,7 +99,7 @@ def get_session_for_student(reg_no: str, db: Session = Depends(get_db)):
             ClassSession.teacher_id == student.teacher_id,
             ClassSession.is_active == True
         )
-        .order_by(ClassSession.id.desc())   # 🔥 ensures latest session
+        .order_by(ClassSession.id.desc())
         .first()
     )
 
@@ -128,6 +114,5 @@ def get_session_for_student(reg_no: str, db: Session = Depends(get_db)):
         "section": session.section,
         "latitude": session.latitude,
         "longitude": session.longitude,
-        "radius": session.radius,
-        "teacher_id": session.teacher_id
+        "radius": session.radius
     }

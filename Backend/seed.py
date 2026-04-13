@@ -30,17 +30,25 @@ for i in range(1, 16):
 rooms = [
 
     # AB1
-    Classroom(block="AB1", room="001", latitude=26.2389, longitude=73.0243),
+    Classroom(
+    block="AB1",
+    room="001",
+    latitude=26.841034,
+    longitude=75.561795
+),
+
     Classroom(block="AB1", room="002", latitude=26.2395, longitude=73.0249),
     Classroom(block="AB1", room="101", latitude=26.2392, longitude=73.0251),
     Classroom(block="AB1", room="102", latitude=26.2400, longitude=73.0258),
     Classroom(block="AB1", room="201", latitude=26.2408, longitude=73.0263),
+    Classroom(block="AB1", room="301", latitude=26.2408, longitude=73.0263),
 
     # AB2
     Classroom(block="AB2", room="001", latitude=26.2415, longitude=73.0268),
     Classroom(block="AB2", room="002", latitude=26.2420, longitude=73.0274),
     Classroom(block="AB2", room="101", latitude=26.2427, longitude=73.0281),
     Classroom(block="AB2", room="102", latitude=26.2433, longitude=73.0286),
+    Classroom(block="AB2", room="301", latitude=26.842870, longitude=75.564351),
 
     # AB3
     Classroom(block="AB3", room="001", latitude=26.2440, longitude=73.0292),
@@ -48,7 +56,7 @@ rooms = [
 
     # LHC
     Classroom(block="LHC", room="001", latitude=26.2453, longitude=73.0304),
-    Classroom(block="LHC", room="101", latitude=26.2460, longitude=73.0310),
+    Classroom(block="LHC", room="203", latitude=26.842870, longitude=75.564351),
 ]
 
 db.add_all(rooms)
