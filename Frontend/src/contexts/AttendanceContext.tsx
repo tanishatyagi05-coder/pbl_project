@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { API_BASE_URL } from "@/config";
 
 interface ActiveSession {
   sessionId: number;
@@ -34,7 +35,7 @@ export const AttendanceProvider = ({ children }: { children: ReactNode }) => {
       if (!user.reg_no) return;
 
       const res = await fetch(
-        `http://127.0.0.1:8000/student/session/${user.reg_no}`
+        `${API_BASE_URL}/student/session/${user.reg_no}`
       );
 
       const data = await res.json();

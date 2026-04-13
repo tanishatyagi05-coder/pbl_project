@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { LogOut, Camera, Clock } from 'lucide-react';
 import manipalLogo from '@/assets/manipal-logo.png';
+import { API_BASE_URL } from '@/config';
 import { useState, useEffect } from 'react';
 
 const Dashboard = () => {
@@ -20,7 +21,7 @@ const Dashboard = () => {
 
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/student/session/${user.reg_no}`
+          `${API_BASE_URL}/student/session/${user.reg_no}`
         );
 
         const data = await res.json();

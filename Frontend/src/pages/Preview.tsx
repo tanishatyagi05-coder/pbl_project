@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Calendar, User, ArrowLeft, CheckCircle2, BookOpen, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { API_BASE_URL } from '@/config';
 
 const Preview = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,7 +39,7 @@ const Preview = () => {
       formData.append("photo", file);
 
       const response = await fetch(
-        "http://127.0.0.1:8000/attendance/submit",
+        `${API_BASE_URL}/attendance/submit`,
         {
           method: "POST",
           body: formData

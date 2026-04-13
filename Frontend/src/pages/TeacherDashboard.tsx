@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { LogOut, Power } from 'lucide-react';
 import manipalLogo from '@/assets/manipal-logo.png';
+import { API_BASE_URL } from '@/config';
 
 interface ClassSession {
   courseId: string;
@@ -71,7 +72,7 @@ const TeacherDashboard = () => {
         });
 
         const res = await fetch(
-          `http://127.0.0.1:8000/session/start?${params.toString()}`,
+          `${API_BASE_URL}/session/start?${params.toString()}`,
           { method: "POST" }
         );
 
@@ -105,7 +106,7 @@ const TeacherDashboard = () => {
         
         if (sessionIdToStop) {
           const res = await fetch(
-            `http://127.0.0.1:8000/session/stop/${sessionIdToStop}`,
+            `${API_BASE_URL}/session/stop/${sessionIdToStop}`,
             { method: "POST" }
           );
           const data = await res.json().catch(() => ({}));

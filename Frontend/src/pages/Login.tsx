@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '@/config';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,8 +24,8 @@ const Login = () => {
       const isTeacher = email.includes("professor");
 
       const url = isTeacher
-        ? "http://127.0.0.1:8000/login/teacher"
-        : "http://127.0.0.1:8000/login/student";
+        ? `${API_BASE_URL}/login/teacher`
+        : `${API_BASE_URL}/login/student`;
 
       const params = new URLSearchParams();
       params.append("email", email);

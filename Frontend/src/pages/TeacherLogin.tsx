@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Sparkles, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import manipalLogo from '@/assets/manipal-logo.png';
+import { API_BASE_URL } from '@/config';
 
 const TeacherLogin = () => {
   const [email, setEmail] = useState('');
@@ -38,7 +39,7 @@ const TeacherLogin = () => {
       });
 
       const res = await fetch(
-        `http://127.0.0.1:8000/login/teacher?${params.toString()}`,
+        `${API_BASE_URL}/login/teacher?${params.toString()}`,
         { method: "POST" }
       );
 
