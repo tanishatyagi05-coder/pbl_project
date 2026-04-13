@@ -5,6 +5,8 @@ import models
 from auth import router as auth_router
 from session import router as session_router
 from attendance import router as attendance_router
+from seed import seed_data
+from database import engine, Base, SessionLocal
 
 app = FastAPI()
 
@@ -17,6 +19,16 @@ app.add_middleware(
 )
 
 Base.metadata.create_all(bind=engine)
+
+@app.on_event("startup")
+def startup_event():
+    db = SessionLocal()
+    try:
+        seed_data(db)
+    except Exception as e:
+        print(f"Seeding skipped or already done: {e}")
+    finally:
+        db.close()
 
 app.include_router(auth_router)
 app.include_router(session_router)
