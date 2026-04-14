@@ -52,7 +52,7 @@ def start_session(
         section=section,
         latitude=classroom.latitude,
         longitude=classroom.longitude,
-        radius=100,
+        radius=150,
         is_active=True
     )
 
