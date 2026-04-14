@@ -55,7 +55,7 @@ def seed_data(db: Session):
         {"block": "AB3", "room": "001", "latitude": 26.8460, "longitude": 75.5665},
         {"block": "AB3", "room": "101", "latitude": 26.8465, "longitude": 75.5670},
         {"block": "LHC", "room": "001", "latitude": 26.8470, "longitude": 75.5675},
-        {"block": "LHC", "room": "203", "latitude": 26.842870, "longitude": 75.564351},
+        {"block": "LHC", "room": "203", "latitude": 26.842481318266078, "longitude": 75.56401661356342},
     ]
 
     for room_data in rooms_to_seed:
